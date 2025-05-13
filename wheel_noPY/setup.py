@@ -1,0 +1,56 @@
+import os
+import compileall
+import shutil
+from setuptools import setup, find_packages
+
+# 临时构建目录
+BUILD_DIR = "build_temp"
+SRC_DIR = "src"
+
+# 清理并创建临时目录
+if os.path.exists(BUILD_DIR):
+    shutil.rmtree(BUILD_DIR)
+os.makedirs(BUILD_DIR)
+
+# 复制源代码到临时目录
+shutil.copytree(os.path.join(SRC_DIR, "funcs"),
+                os.path.join(BUILD_DIR, "funcs"))
+
+# 编译所有Python文件为.pyc
+compileall.compile_dir(BUILD_DIR, force=True, legacy=True)
+
+# 处理.py和.pyc文件
+for root, dirs, files in os.walk(BUILD_DIR):
+    for file in files:
+        full_path = os.path.join(root, file)
+
+        # 删除.py文件（保留__init__.py）
+        if file.endswith('.py') and file != '__init__.py':
+            os.remove(full_path)
+
+        # 将.pyc文件移动到正确位置并重命名
+        if file.endswith('.pyc'):
+            # 从类似 '__pycache__/core.cpython-38.pyc' 提取模块名
+            if os.path.basename(root) == '__pycache__':
+                module_name = file.split('.')[0]
+                new_path = os.path.join(os.path.dirname(root), f"{module_name}.pyc")
+                os.rename(full_path, new_path)
+
+# 确保__init__.py存在
+open(os.path.join(BUILD_DIR, "funcs", "__init__.py"), 'a').close()
+
+setup(
+    name="funcs",
+    version="0.1",
+    packages=find_packages(where=BUILD_DIR),
+    package_dir={"": BUILD_DIR},
+    package_data={"funcs": ["*.pyc"]},
+    include_package_data=True,
+    description="A module with protected source code",
+    author="Your Name",
+    author_email="your.email@example.com",
+    install_requires=[
+        'numpy',
+       'matplotlib'
+    ]
+)

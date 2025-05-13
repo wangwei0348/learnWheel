@@ -1,0 +1,9 @@
+setup.py
+build_temp/funcs/__init__.py
+build_temp/funcs/__init__.pyc
+build_temp/funcs/testfuncs.pyc
+build_temp/funcs.egg-info/PKG-INFO
+build_temp/funcs.egg-info/SOURCES.txt
+build_temp/funcs.egg-info/dependency_links.txt
+build_temp/funcs.egg-info/requires.txt
+build_temp/funcs.egg-info/top_level.txt
